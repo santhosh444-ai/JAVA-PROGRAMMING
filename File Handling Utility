@@ -1,0 +1,72 @@
+import java.io.*;
+import java.util.*;
+
+public class FileHandler {
+
+    public static void writeFile(String filename, String content) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            writer.write(content);
+            System.out.println("File written successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void appendToFile(String filename, String content) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
+            writer.write(content);
+            System.out.println("Content appended successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void readFile(String filename) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            System.out.println("File content:");
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void modifyLine(String filename, int lineNumber, String newContent) {
+        try {
+            List<String> lines = new ArrayList<>();
+            BufferedReader reader = new BufferedReader(new FileReader(filename));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+            reader.close();
+
+            if (lineNumber <= lines.size() && lineNumber > 0) {
+                lines.set(lineNumber - 1, newContent);
+                BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+                for (String l : lines) {
+                    writer.write(l);
+                    writer.newLine();
+                }
+                writer.close();
+                System.out.println("Line modified successfully.");
+            } else {
+                System.out.println("Invalid line number.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        String filename = "example.txt";
+
+        writeFile(filename, "Line 1\nLine 2\nLine 3\n");
+        appendToFile(filename, "Appended line.\n");
+        readFile(filename);
+        modifyLine(filename, 2, "This is the new Line 2");
+        readFile(filename);
+    }
+}
