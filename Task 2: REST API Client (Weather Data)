@@ -1,0 +1,43 @@
+import java.io.*;
+import java.net.*;
+import org.json.JSONObject;
+
+public class WeatherAPIClient {
+    public static void main(String[] args) {
+        String apiKey = "your_api_key_here";  // Get a free API key from weatherapi.com
+        String city = "London";
+        String urlString = "http://api.weatherapi.com/v1/current.json?key=" + apiKey + "&q=" + city;
+
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream())
+            );
+            StringBuilder json = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                json.append(line);
+            }
+
+            reader.close();
+            conn.disconnect();
+
+            // Parse JSON
+            JSONObject obj = new JSONObject(json.toString());
+            JSONObject location = obj.getJSONObject("location");
+            JSONObject current = obj.getJSONObject("current");
+
+            System.out.println("City: " + location.getString("name"));
+            System.out.println("Region: " + location.getString("region"));
+            System.out.println("Temperature (°C): " + current.getDouble("temp_c"));
+            System.out.println("Condition: " + current.getJSONObject("condition").getString("text"));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
